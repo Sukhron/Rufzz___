@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Akses Kamera & Lokasi (Legal)</title>
+</head>
+<body>
+
+    <h1>Akses Kamera dan Lokasi</h1>
+    <button id="btnAkses">Izinkan Akses</button>
+    <div id="status"></div>
+    <video id="videoStream" width="320" height="240" autoplay></video>
+
+    <script>
+        const btnAkses = document.getElementById('btnAkses');
+        const statusDiv = document.getElementById('status');
+        const videoElement = document.getElementById('videoStream');
+
+        btnAkses.addEventListener('click', async () => {
+            // 1. Meminta Akses Kamera
+            try {
+                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+                videoElement.srcObject = stream;
+                statusDiv.innerHTML = "Kamera berhasil diakses.";
+            } catch (err) {
+                statusDiv.innerHTML = "Akses kamera ditolak atau gagal: " + err.message;
+            }
+
+            // 2. Meminta Akses Lokasi
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const lat = position.coords.latitude;
+                        const long = position.coords.longitude;
+                        statusDiv.innerHTML += `<br>Lokasi: ${lat}, ${long}`;
+                    },
+                    (error) => {
+                        statusDiv.innerHTML += `<br>Gagal mendapatkan lokasi: ${error.message}`;
+                    }
+                );
+            } else {
+                statusDiv.innerHTML += "<br>Browser tidak mendukung Geolocation.";
+            }
+        });
+    </script>
+</body>
+</html>
